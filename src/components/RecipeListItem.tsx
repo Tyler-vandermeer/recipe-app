@@ -1,25 +1,24 @@
 import {
   IonItem,
-  IonLabel,
-  IonNote
+  IonLabel
   } from '@ionic/react';
 import { Recipe } from '../data/RecipeModel';
-import './RecipeListItem.css';
+import './css/RecipeListItem.css';
 
 interface RecipeListItemProps {
   recipe: Recipe;
 }
 
-const RecipeListItem: React.FC<RecipeListItemProps> = ({ recipe: message }) => {
+const RecipeListItem: React.FC<RecipeListItemProps> = ({ recipe: recipe }) => {
   return (
-    <IonItem routerLink={`/message/${message.id}`} detail={false}>
+    <IonItem routerLink={`/recipe/${recipe.id}`} detail={false}>
       <div slot="start" className="dot dot-unread"></div>
       <IonLabel className="ion-text-wrap">
         <h2>
-          {message.name}
+          {recipe.name}
         </h2>
         <p>
-          {message.description}
+          {recipe.description}
         </p>
       </IonLabel>
     </IonItem>

@@ -66,7 +66,7 @@ const App: React.FC = () => {
           <Route path="/home" exact={true}>
             <Home />
           </Route>
-          <Route path="/message/:id">
+          <Route path="/recipe/:id">
             <ViewRecipe />
           </Route>
         </IonRouterOutlet>

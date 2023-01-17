@@ -9,7 +9,7 @@ const t = {
     ],
     instructions: [
         {
-            step: 0,
+            index: 0,
             description: ''
         }
     ]
