@@ -38,6 +38,12 @@ const Home: React.FC = () => {
     }, 3000);
   };
 
+  const handleDeleteRecipe = (id: number) => {
+    const filteredRecipes = recipes.filter((v) => v.id !== id);
+    setRecipes(filteredRecipes);
+    set('recipes', filteredRecipes);
+  }
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const handleNewRecipeClick = (event: React.MouseEvent<HTMLIonFabButtonElement, MouseEvent>) => {
     event.preventDefault();
@@ -62,8 +68,8 @@ const Home: React.FC = () => {
     const newRecipes = [...recipes, newRecipe];
 
     setRecipes(newRecipes);
-
     set('recipes', newRecipes);
+
     setRecipeName('');
     setIngredients([{ name: '', amount: 0 }]);
     setInstructions(['']);
@@ -159,7 +165,7 @@ const Home: React.FC = () => {
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
         <IonList>
-          {recipes.map(r => <RecipeListItem key={r.id} recipe={r} />)}
+          {recipes.map(r => <RecipeListItem key={r.id} recipe={r} handleDeleteRecipe={handleDeleteRecipe} />)}
         </IonList>
         <IonFab slot="fixed" vertical='bottom' horizontal="end">
           <IonFabButton onClick={handleNewRecipeClick}>
