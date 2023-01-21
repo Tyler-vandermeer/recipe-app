@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IRecipe, get } from '../data/RecipeModel';
+import { IRecipe, getById } from '../data/RecipeModel';
 import {
   IonBackButton,
   IonButtons,
@@ -8,12 +8,12 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonNote,
+  IonList,
   IonPage,
   IonToolbar,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { personCircle } from 'ionicons/icons';
+import { wineOutline } from 'ionicons/icons';
 import { useParams } from 'react-router';
 import './ViewRecipe.css';
 
@@ -21,10 +21,29 @@ function ViewRecipe() {
   const [recipe, setRecipe] = useState<IRecipe>();
   const params = useParams<{ id: string }>();
 
-  useIonViewWillEnter(() => {
-    const msg = {} as IRecipe;// getMessage(parseInt(params.id, 10));
-    setRecipe(msg);
+  useIonViewWillEnter(async () => {
+    setRecipe(await getById('recipes', +params.id));
   });
+
+  const displayIngredients = () => {
+    return recipe?.ingredients.map((v, i) => {
+      return (
+        <IonItem key={i}>
+          <IonLabel>{v.name}, {v.amount}</IonLabel>
+        </IonItem>
+      )
+    })
+  }
+
+  const displayInstructions = () => {
+    return recipe?.instructions.map((v, i) => {
+      return (
+        <IonItem key={i}>
+          <IonLabel>{v.description}</IonLabel>
+        </IonItem>
+      )
+    })
+  }
 
   return (
     <IonPage id="view-message-page">
@@ -40,13 +59,21 @@ function ViewRecipe() {
         {recipe ? (
           <>
             <IonItem>
-              <IonIcon icon={personCircle} color="primary"></IonIcon>
-              <IonLabel className="ion-text-wrap">
-                <h2>
-                  {recipe.name}
-                </h2>
-              </IonLabel>
+              <IonLabel><h2>{recipe.name}</h2></IonLabel>
             </IonItem>
+            <IonItem lines='none'>
+              <IonLabel><h2>Ingredients:</h2></IonLabel>
+            </IonItem>
+            <IonList inset={true} style={{ marginTop: '0', marginBottom: '0' }}>
+              {displayIngredients()}
+            </IonList>
+            <IonItem style={{ height: '0' }}/>
+            <IonItem lines='none'>
+              <IonLabel><h2>Instructions:</h2></IonLabel>
+            </IonItem>
+            <IonList inset={true} style={{ marginTop: '0' }}>
+              {displayInstructions()}
+            </IonList>
           </>
         ) : (
           <div>Message not found</div>

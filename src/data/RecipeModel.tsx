@@ -37,3 +37,8 @@ export const get = async (key: string) => {
     const val = await storage.get(`${key}`);
     return val;
 }
+
+export const getById = async (key: string, id: number) => {
+    const val = await storage.get(`${key}`);
+    return val.filter((v: IRecipe) => v.id === id)[0];
+}
