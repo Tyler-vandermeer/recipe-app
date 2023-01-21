@@ -1,21 +1,19 @@
 import { Storage, Drivers } from '@ionic/storage';
 
-export interface Recipe {
+export interface IRecipe {
     id: number,
     name: string;
     description?: string,
-    ingredients: Ingredient[];
-    instructions: Instruction[];
+    ingredients: IIngredient[];
+    instructions: IInstruction[];
 }
 
-export interface Ingredient {
-    id: number,
+export interface IIngredient {
     name: string,
     amount: string
 }
 
-export interface Instruction {
-    step: number,
+export interface IInstruction {
     description: string
 }
 
@@ -30,7 +28,7 @@ export const createStore = async (name = "__mydb") => {
     storage.create();
 }
 
-export const set = (key: string, value: Recipe[]) => {
+export const set = (key: string, value: IRecipe[]) => {
     // Add logic to check if recipe name exists and to generate an index
     storage.set(key, value);
 }

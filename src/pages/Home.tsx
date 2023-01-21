@@ -1,6 +1,6 @@
 import RecipeListItem from '../components/RecipeListItem';
-import React, { MouseEventHandler, useRef, useState } from 'react';
-import { Recipe, get } from '../data/RecipeModel';
+import React, { useRef, useState } from 'react';
+import { IRecipe, get, set, IInstruction, IIngredient } from '../data/RecipeModel';
 import {
   IonContent,
   IonList,
@@ -21,15 +21,12 @@ import {
   IonLabel,
   IonInput,
   IonItemGroup,
-  IonSelect,
-  IonSelectOption,
 } from '@ionic/react';
 import { add, addCircleOutline, removeCircleOutline } from 'ionicons/icons';
 import './Home.css';
-import { OverlayEventDetail } from '@ionic/core/components';
 
 const Home: React.FC = () => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [recipes, setRecipes] = useState<IRecipe[]>([]);
 
   useIonViewWillEnter(async () => {
     setRecipes(await get('recipes'));
@@ -47,38 +44,112 @@ const Home: React.FC = () => {
     setIsOpen(true);
   };
 
+  const [recipeName, setRecipeName] = useState<string>('');
   const modal = useRef<HTMLIonModalElement>(null);
   modal.current?.onWillDismiss().then(() => setIsOpen(false));
 
+  const submit = (event: React.MouseEvent<HTMLIonButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    const newId = Math.max(...recipes.map(r => r.id)) + 1;
 
-  function submit() {
+    const newRecipe = {
+      id: newId,
+      name: recipeName,
+      ingredients: ingredients as IIngredient[],
+      instructions: instructions.map(v => ({ description: v})) as IInstruction[]
+    } as IRecipe;
 
+    const newRecipes = [...recipes, newRecipe];
+
+    setRecipes(newRecipes);
+
+    set('recipes', newRecipes);
+    setRecipeName('');
+    setIngredients([{ name: '', amount: 0 }]);
+    setInstructions(['']);
+
+    setIsOpen(false)
   }
 
-  const [ingredientFields, setIngredientFields] = useState<React.ReactElement[]>([<IonItem><IonInput type="text" placeholder="Ingredient Name" /><IonInput type="number" placeholder='1oz'/></IonItem>]);
-  const handleAddIngredientField= (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
-    event.preventDefault();
-    setIngredientFields([...ingredientFields, <IonItem><IonInput type="text" placeholder="Ingredient Name" /><IonInput type="number" placeholder='1oz'/></IonItem>]);
+  const handleRecipeNameChane = (event: React.ChangeEvent<HTMLIonInputElement>) => {
+    setRecipeName(`${event.currentTarget.value}`);
   }
 
-  const handleRemoveIngredientField= (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
+  const [ingredients, setIngredients] = useState<any[]>([{ name: '', amount: 0 }]);
+
+  const onIngredientNameChange = (event: React.ChangeEvent<HTMLIonInputElement>) => {
+    const index = event.currentTarget.dataset.index;
+    if (index !== undefined) {
+      const newIngredients = ingredients
+      newIngredients[+index].name = event.currentTarget.value;
+      setIngredients(newIngredients);
+    }
+  }
+
+  const onIngredientAmountChange = (event: React.ChangeEvent<HTMLIonInputElement>) => {
+    const index = event.currentTarget.dataset.index;
+    if (index !== undefined) {
+      const newIngredients = ingredients
+      newIngredients[+index].amount = event.currentTarget.value;
+      setIngredients(newIngredients);
+    }
+  }
+
+  const displayIngredients = () => {
+    return ingredients.map((v, i) => {
+      return (
+        <IonItem key={i}>
+          <IonInput type="text" placeholder="Ingredient Name" data-index={i} value={v.name} onInput={onIngredientNameChange} />
+          <IonInput type="number" placeholder='1oz' data-index={i} value={v.amount} onInput={onIngredientAmountChange} />
+        </IonItem>
+      )
+    });
+  }
+
+  const handleAddIngredientField = (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
     event.preventDefault();
-    const newFields = InstructionFields;
+    setIngredients([...ingredients, { name: '', amount: 0 }]);
+  }
+
+  const handleRemoveIngredientField = (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
+    event.preventDefault();
+    const newFields = ingredients;
     newFields.pop();
-    setInstructionFields([...newFields]);
-  }
-  
-  const [InstructionFields, setInstructionFields] = useState<React.ReactElement[]>([<IonItem><IonInput type="text" placeholder="Instruction Name" /></IonItem>]);
-  const handleAddInstructionField= (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
-    event.preventDefault();
-    setInstructionFields([...InstructionFields, <IonItem><IonInput type="text" placeholder="Instruction Name" /></IonItem>]);
+    setIngredients([...newFields]);
   }
 
-  const handleRemoveInstructionField= (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
+  const [instructions, setInstructions] = useState<string[]>(['']);
+
+  const onInstructionChange = (event: React.ChangeEvent<HTMLIonInputElement>) => {
+    const index = event.currentTarget.dataset.index;
+    if (index !== undefined) {
+      const newInstructions = instructions
+      const value = event.currentTarget.value as string;
+      newInstructions[+index] = value;
+      setInstructions(newInstructions);
+    }
+  }
+
+  const displayInstructions = () => {
+    return instructions.map((v, i) => {
+      return (
+        <IonItem key={i}>
+          <IonInput type="text" placeholder="Instructiuon Description" data-index={i} value={v} onInput={onInstructionChange} />
+        </IonItem>
+      )
+    });
+  }
+
+  const handleAddInstructionField = (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
     event.preventDefault();
-    const newFields = InstructionFields;
+    setInstructions([...instructions, '']);
+  }
+
+  const handleRemoveInstructionField = (event: React.MouseEvent<HTMLIonIconElement, MouseEvent>) => {
+    event.preventDefault();
+    const newFields = instructions;
     newFields.pop();
-    setInstructionFields([...newFields]);
+    setInstructions([...newFields]);
   }
 
   return (
@@ -104,7 +175,7 @@ const Home: React.FC = () => {
               </IonButtons>
               <IonTitle>Add Recipe</IonTitle>
               <IonButtons slot="end">
-                <IonButton strong={true} onClick={() => submit()}>
+                <IonButton strong={true} onClick={submit}>
                   Confirm
                 </IonButton>
               </IonButtons>
@@ -112,24 +183,23 @@ const Home: React.FC = () => {
           </IonHeader>
 
           <IonContent className="ion-padding">
-
             <IonItem>
               <IonLabel position="stacked">Recipe Name:</IonLabel>
-              <IonInput type="text" placeholder="Recipe Name" />
+              <IonInput type="text" placeholder="Recipe Name" onInput={handleRecipeNameChane} value={recipeName} />
             </IonItem>
 
             <IonItemGroup>
-              <IonIcon icon={addCircleOutline} style={{ position:'absolute', right:'1em'}} onClick={handleAddIngredientField}/>
-              <IonIcon icon={removeCircleOutline} style={{ position:'absolute', right:'2.5em'}} onClick={handleRemoveIngredientField}/>
+              <IonIcon icon={addCircleOutline} style={{ position: 'absolute', right: '1em' }} onClick={handleAddIngredientField} />
+              <IonIcon icon={removeCircleOutline} style={{ position: 'absolute', right: '2.5em' }} onClick={handleRemoveIngredientField} />
               <IonLabel position="stacked">Ingredients:</IonLabel>
-              {ingredientFields}
+              {displayIngredients()}
             </IonItemGroup>
 
             <IonItemGroup>
-              <IonIcon icon={addCircleOutline} style={{ position:'absolute', right:'1em'}} onClick={handleAddInstructionField}/>
-              <IonIcon icon={removeCircleOutline} style={{ position:'absolute', right:'2.5em'}} onClick={handleRemoveInstructionField}/>
+              <IonIcon icon={addCircleOutline} style={{ position: 'absolute', right: '1em' }} onClick={handleAddInstructionField} />
+              <IonIcon icon={removeCircleOutline} style={{ position: 'absolute', right: '2.5em' }} onClick={handleRemoveInstructionField} />
               <IonLabel position="stacked">Instructions:</IonLabel>
-              {InstructionFields}
+              {displayInstructions()}
             </IonItemGroup>
           </IonContent>
         </IonModal>

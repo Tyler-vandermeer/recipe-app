@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Recipe, get } from '../data/RecipeModel';
+import { IRecipe, get } from '../data/RecipeModel';
 import {
   IonBackButton,
   IonButtons,
@@ -18,11 +18,11 @@ import { useParams } from 'react-router';
 import './ViewRecipe.css';
 
 function ViewRecipe() {
-  const [recipe, setRecipe] = useState<Recipe>();
+  const [recipe, setRecipe] = useState<IRecipe>();
   const params = useParams<{ id: string }>();
 
   useIonViewWillEnter(() => {
-    const msg = {} as Recipe;// getMessage(parseInt(params.id, 10));
+    const msg = {} as IRecipe;// getMessage(parseInt(params.id, 10));
     setRecipe(msg);
   });
 

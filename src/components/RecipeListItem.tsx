@@ -2,14 +2,14 @@ import {
   IonItem,
   IonLabel
   } from '@ionic/react';
-import { Recipe } from '../data/RecipeModel';
+import { IRecipe } from '../data/RecipeModel';
 import './css/RecipeListItem.css';
 
 interface RecipeListItemProps {
-  recipe: Recipe;
+  recipe: IRecipe;
 }
 
-const RecipeListItem: React.FC<RecipeListItemProps> = ({ recipe: recipe }) => {
+const RecipeListItem: React.FC<RecipeListItemProps> = ({ recipe }) => {
   return (
     <IonItem routerLink={`/recipe/${recipe.id}`} detail={false}>
       <div slot="start" className="dot dot-unread"></div>
@@ -17,9 +17,6 @@ const RecipeListItem: React.FC<RecipeListItemProps> = ({ recipe: recipe }) => {
         <h2>
           {recipe.name}
         </h2>
-        <p>
-          {recipe.description}
-        </p>
       </IonLabel>
     </IonItem>
   );

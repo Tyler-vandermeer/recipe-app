@@ -24,7 +24,7 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 
 import { useEffect } from 'react';
-import { createStore, get, set, Recipe, Ingredient, Instruction } from './data/RecipeModel';
+import { createStore } from './data/RecipeModel';
 
 setupIonicReact();
 
@@ -33,24 +33,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const setUpStore = async () => {
       await createStore('RecipeStore');
-      set('recipes', [{
-        id: 0,
-        name: 'Butterd Noodles',
-        description: 'The best god damn dish in the world',
-        ingredients: [
-          {
-            id: 0,
-            name: 'Black Pepper',
-            amount: 'Enough'
-          } as Ingredient
-        ],
-        instructions: [
-          {
-            step: 0,
-            description: 'Boil Water'
-          } as Instruction
-        ]
-      } as Recipe]);
     }
 
     setUpStore();
