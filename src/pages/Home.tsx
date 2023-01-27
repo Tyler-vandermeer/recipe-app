@@ -198,6 +198,7 @@ const Home: React.FC = () => {
               <IonIcon icon={addCircleOutline} style={{ position: 'absolute', right: '1em' }} onClick={handleAddIngredientField} />
               <IonIcon icon={removeCircleOutline} style={{ position: 'absolute', right: '2.5em' }} onClick={handleRemoveIngredientField} />
               <IonLabel position="stacked">Ingredients:</IonLabel>
+              <br />
               {displayIngredients()}
             </IonItemGroup>
 
@@ -205,6 +206,7 @@ const Home: React.FC = () => {
               <IonIcon icon={addCircleOutline} style={{ position: 'absolute', right: '1em' }} onClick={handleAddInstructionField} />
               <IonIcon icon={removeCircleOutline} style={{ position: 'absolute', right: '2.5em' }} onClick={handleRemoveInstructionField} />
               <IonLabel position="stacked">Instructions:</IonLabel>
+              <br />
               {displayInstructions()}
             </IonItemGroup>
           </IonContent>
